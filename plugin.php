@@ -20,3 +20,40 @@ function hundred_days_scripts() {
 }
 add_action( 'admin_enqueue_scripts', 'hundred_days_scripts' );
 
+
+// On the plugin activation, add a custom table
+register_activation_hook( __FILE__, 'hundred_days_stats_table' );
+
+function hundred_days_stats_table() {
+    global $wpdb;
+	$charset_collate = $wpdb->get_charset_collate();
+	$table_name = $wpdb->prefix . 'hundred_days_stats';
+
+	$sql = "CREATE TABLE $table_name (
+		id mediumint(9) NOT NULL AUTO_INCREMENT,
+		time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+		views smallint(5) NOT NULL,
+		clicks smallint(5) NOT NULL,
+		UNIQUE KEY id (id)
+	) $charset_collate;";
+
+	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+	dbDelta( $sql );
+}
+
+// Create a custom REST API endpoint for the stats
+function hundred_days_get_stats() {
+    global $wpdb;
+    $stats = $wpdb->get_results("SELECT * FROM wp_hundred_days_stats");
+
+    return $stats;
+}
+
+function hundred_days_stats_endpoint() {
+    register_rest_route( 'wp/v2', '/hundred_days_stats', array(
+        'args' => array(),
+        'methods' => 'GET',
+        'callback' => 'hundred_days_get_stats'
+    ));
+}
+add_action( 'rest_api_init', 'hundred_days_stats_endpoint');
