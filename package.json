@@ -3,9 +3,14 @@
   "version": "0.0.1",
   "description": "WordPress dashboard chart widget.",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "wp-scripts build",
+    "start": "wp-scripts start"
   },
   "keywords": [],
   "author": "",
-  "license": "GPL v3"
+  "license": "GPL v3",
+  "devDependencies": {
+    "@wordpress/element": "^4.19.0",
+    "@wordpress/scripts": "^24.5.0"
+  }
 }
